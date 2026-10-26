@@ -13,6 +13,7 @@
         android:orientation="vertical"
         android:padding="24dp">
 
+        <!-- App heading -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,6 +30,7 @@
             android:textColor="#647067"
             android:textSize="16sp" />
 
+        <!-- Image selection section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -57,23 +59,38 @@
             android:src="@android:drawable/ic_menu_gallery" />
 
         <Button
+            android:id="@+id/btnTakePhoto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Take Photo"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#245B35" />
+
+
+        <!-- Choose image button -->
+        <Button
             android:id="@+id/btnChooseImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/choose_image_btn"
-            app:backgroundTint="@null"
+            android:text="Choose Image"
             android:textColor="@color/green"
-            android:text="Choose Image" />
+            app:backgroundTint="@null" />
 
+        <!-- Identify waste button -->
         <Button
             android:id="@+id/btnClassify"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:backgroundTint="#245B35"
             android:enabled="false"
-            android:text="Identify Waste" />
+            android:text="Identify Waste"
+            android:textColor="@android:color/white" />
 
+        <!-- Classification result -->
         <TextView
             android:id="@+id/txtResult"
             android:layout_width="match_parent"
@@ -84,6 +101,7 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
+        <!-- Confidence score -->
         <TextView
             android:id="@+id/txtConfidence"
             android:layout_width="match_parent"
@@ -92,16 +110,31 @@
             android:textColor="#647067"
             android:textSize="14sp" />
 
+        <!-- Disposal guidance and low-confidence warning -->
         <TextView
             android:id="@+id/txtGuidance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:padding="16dp"
             android:background="#E2E9DE"
+            android:gravity="start"
+            android:lineSpacingExtra="4dp"
+            android:padding="16dp"
             android:text="Disposal guidance will appear here."
             android:textColor="#263C2B"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textIsSelectable="true" />
+
+        <!-- Recycling disclaimer -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingBottom="8dp"
+            android:text="Note: Disposal recommendations depend on local recycling rules. Verify uncertain predictions before disposing of waste."
+            android:textColor="#647067"
+            android:textSize="12sp" />
 
     </LinearLayout>
+
 </ScrollView>
