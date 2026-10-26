@@ -47,6 +47,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     implementation("org.tensorflow:tensorflow-lite-task-vision:0.4.4")
+
+    implementation("org.tensorflow:tensorflow-lite:2.16.1")
     implementation("org.tensorflow:tensorflow-lite:2.16.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
 }
