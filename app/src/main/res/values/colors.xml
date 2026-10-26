@@ -4,4 +4,16 @@
     <color name="white">#FFFFFFFF</color>
     <color name="green">#043A04</color>
     <color name="lightgreen">#54D354</color>
+
+    <!-- UI Redesign Palette -->
+    <color name="bg_main">#F2F6F0</color>
+    <color name="text_dark">#132014</color>
+    <color name="text_muted">#5C6B5E</color>
+    <color name="green_primary">#1B4320</color>
+    <color name="btn_bg_light">#C8E5BF</color>
+    <color name="btn_bg_disabled">#E0EAD9</color>
+    <color name="card_bg_outer">#EEF4EC</color>
+    <color name="card_bg_inner">#E2EBDD</color>
+    <color name="progress_track">#D5E0D4</color>
+    <color name="progress_indicator">#1B4320</color>
 </resources>

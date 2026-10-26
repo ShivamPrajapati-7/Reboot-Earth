@@ -1,139 +1,343 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F4F7F1"
+    android:background="@color/bg_main"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="28dp">
 
-        <!-- App heading -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="EcoVision"
-            android:textColor="#245B35"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:text="Smart waste identification"
-            android:textColor="#647067"
-            android:textSize="16sp" />
-
-        <!-- Image selection section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="Scan your waste"
-            android:textColor="#1D3022"
-            android:textSize="22sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Select a clear photo of one waste item."
-            android:textColor="#647067"
-            android:textSize="14sp" />
-
-        <ImageView
-            android:id="@+id/imagePreview"
+        <!-- Header Section -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:layout_marginTop="20dp"
-            android:background="#E2E9DE"
-            android:contentDescription="Selected waste photo"
-            android:scaleType="centerCrop"
-            android:src="@android:drawable/ic_menu_gallery" />
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnTakePhoto"
+            <ImageView
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:src="@drawable/ic_leaf"
+                app:tint="@color/green_primary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Reboot Earth"
+                    android:textColor="@color/text_dark"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="Small steps for a greener planet"
+                    android:textColor="@color/text_muted"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Image Preview Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_marginTop="18dp"
+            app:cardBackgroundColor="#E0E8DC"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <ImageView
+                android:id="@+id/imagePreview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Selected waste photo"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_gallery"
+                app:tint="#A2B3A0" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Action Buttons Row: Gallery & Camera -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Take Photo"
-            android:textColor="@android:color/white"
-            android:backgroundTint="#245B35" />
+            android:orientation="horizontal">
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnChooseImage"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:text="Gallery"
+                android:textAllCaps="false"
+                android:textColor="@color/green_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/btn_bg_light"
+                app:cornerRadius="16dp"
+                app:elevation="0dp"
+                app:icon="@drawable/ic_gallery"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconTint="@color/green_primary"
+                app:rippleColor="#201B4320" />
 
-        <!-- Choose image button -->
-        <Button
-            android:id="@+id/btnChooseImage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/choose_image_btn"
-            android:text="Choose Image"
-            android:textColor="@color/green"
-            app:backgroundTint="@null" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTakePhoto"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:text="Camera"
+                android:textAllCaps="false"
+                android:textColor="@color/green_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/btn_bg_light"
+                app:cornerRadius="16dp"
+                app:elevation="0dp"
+                app:icon="@drawable/ic_camera"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconTint="@color/green_primary"
+                app:rippleColor="#201B4320" />
 
-        <!-- Identify waste button -->
-        <Button
+        </LinearLayout>
+
+        <!-- Identify Waste Button -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnClassify"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="#245B35"
-            android:enabled="false"
+            android:layout_height="54dp"
+            android:layout_marginTop="12dp"
             android:text="Identify Waste"
-            android:textColor="@android:color/white" />
-
-        <!-- Classification result -->
-        <TextView
-            android:id="@+id/txtResult"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:text="Classification result will appear here."
-            android:textColor="#245B35"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <!-- Confidence score -->
-        <TextView
-            android:id="@+id/txtConfidence"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="#647067"
-            android:textSize="14sp" />
-
-        <!-- Disposal guidance and low-confidence warning -->
-        <TextView
-            android:id="@+id/txtGuidance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="#E2E9DE"
-            android:gravity="start"
-            android:lineSpacingExtra="4dp"
-            android:padding="16dp"
-            android:text="Disposal guidance will appear here."
-            android:textColor="#263C2B"
+            android:textAllCaps="false"
+            android:textColor="@color/green_primary"
             android:textSize="16sp"
-            android:textIsSelectable="true" />
+            android:textStyle="bold"
+            app:backgroundTint="@color/btn_bg_light"
+            app:cornerRadius="16dp"
+            app:elevation="0dp"
+            app:icon="@drawable/ic_scan"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp"
+            app:iconTint="@color/green_primary"
+            app:rippleColor="#201B4320" />
 
-        <!-- Recycling disclaimer -->
-        <TextView
+        <!-- Classification Result Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:paddingBottom="8dp"
-            android:text="Note: Disposal recommendations depend on local recycling rules. Verify uncertain predictions before disposing of waste."
-            android:textColor="#647067"
-            android:textSize="12sp" />
+            android:layout_marginTop="20dp"
+            app:cardBackgroundColor="@color/card_bg_outer"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Category Badge Header -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_scan"
+                        app:tint="@color/green_primary" />
+
+                    <TextView
+                        android:id="@+id/txtCategoryBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:letterSpacing="0.06"
+                        android:text="RESIDUAL WASTE"
+                        android:textColor="@color/green_primary"
+                        android:textSize="13sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Item Title -->
+                <TextView
+                    android:id="@+id/txtResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textColor="@color/text_dark"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <!-- Confidence Score Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Confidence score"
+                        android:textColor="@color/text_muted"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/txtConfidence"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.0%"
+                        android:textColor="@color/text_dark"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Progress Bar -->
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/progressConfidence"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:progress="0"
+                    app:indicatorColor="@color/progress_indicator"
+                    app:trackColor="@color/progress_track"
+                    app:trackCornerRadius="4dp"
+                    app:trackThickness="6dp" />
+
+                <!-- Sub-Card 1: Disposal Guidance -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    app:cardBackgroundColor="@color/card_bg_inner"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_info"
+                                app:tint="@color/green_primary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Disposal Guidance"
+                                android:textColor="@color/green_primary"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/txtGuidance"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:lineSpacingExtra="3dp"
+                            android:text="Place in general residual waste. Consider eco-friendly re-usable alternatives next time!"
+                            android:textColor="#334235"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Sub-Card 2: Recycling Steps -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardRecyclingSteps"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    app:cardBackgroundColor="@color/card_bg_inner"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_recycle"
+                                app:tint="@color/green_primary" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="Recycling Steps"
+                                android:textColor="@color/green_primary"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/txtRecyclingSteps"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:lineSpacingExtra="4dp"
+                            android:text="1. Clean or rinse item if needed.\n2. Verify local waste sorting guidelines.\n3. Place in designated sorting container."
+                            android:textColor="#334235"
+                            android:textSize="14sp" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 

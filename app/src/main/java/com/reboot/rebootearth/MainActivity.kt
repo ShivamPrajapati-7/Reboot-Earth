@@ -1,10 +1,9 @@
-
 package com.reboot.rebootearth
 
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -12,31 +11,38 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Locale
-import android.content.Intent
-import android.os.Environment
-import androidx.core.content.FileProvider
 import java.io.File
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var imagePreview: ImageView
-    private lateinit var btnClassify: Button
+    private lateinit var btnChooseImage: MaterialButton
+    private lateinit var btnTakePhoto: MaterialButton
+    private lateinit var btnClassify: MaterialButton
+
+    private lateinit var cardResult: MaterialCardView
+    private lateinit var txtCategoryBadge: TextView
     private lateinit var txtResult: TextView
     private lateinit var txtConfidence: TextView
+    private lateinit var progressConfidence: LinearProgressIndicator
     private lateinit var txtGuidance: TextView
-    private lateinit var btnTakePhoto: Button
+    private lateinit var cardRecyclingSteps: MaterialCardView
+    private lateinit var txtRecyclingSteps: TextView
 
     private var selectedImageUri: Uri? = null
+    private var cameraImageUri: Uri? = null
 
-
-    // A configurable threshold, not a guarantee of correctness.
     private val confidenceThreshold = 0.50f
 
     private val cameraLauncher =
@@ -45,16 +51,8 @@ class MainActivity : AppCompatActivity() {
         ) { success ->
             if (success) {
                 val uri = cameraImageUri
-
                 if (uri != null) {
-                    selectedImageUri = uri
-                    imagePreview.setImageURI(uri)
-
-                    btnClassify.isEnabled = true
-                    txtResult.text = "Photo captured"
-                    txtConfidence.text = ""
-                    txtGuidance.text =
-                        "Tap Identify Waste to analyse this photo."
+                    onImageSelected(uri)
                 }
             } else {
                 Toast.makeText(
@@ -65,21 +63,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-    private var cameraImageUri: Uri? = null
-
     private val imagePicker =
         registerForActivityResult(
             ActivityResultContracts.PickVisualMedia()
         ) { uri ->
             if (uri != null) {
-                selectedImageUri = uri
-                imagePreview.setImageURI(uri)
-
-                btnClassify.isEnabled = true
-                txtResult.text = "Image selected"
-                txtConfidence.text = ""
-                txtGuidance.text =
-                    "Tap Identify Waste to analyse this image."
+                onImageSelected(uri)
             } else {
                 Toast.makeText(
                     this,
@@ -93,7 +82,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        btnTakePhoto = findViewById(R.id.btnTakePhoto)
 
         ViewCompat.setOnApplyWindowInsetsListener(
             findViewById(R.id.main)
@@ -101,7 +89,6 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
             )
-
             view.setPadding(
                 systemBars.left,
                 systemBars.top,
@@ -112,13 +99,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         imagePreview = findViewById(R.id.imagePreview)
+        btnChooseImage = findViewById(R.id.btnChooseImage)
+        btnTakePhoto = findViewById(R.id.btnTakePhoto)
         btnClassify = findViewById(R.id.btnClassify)
+
+        cardResult = findViewById(R.id.cardResult)
+        txtCategoryBadge = findViewById(R.id.txtCategoryBadge)
         txtResult = findViewById(R.id.txtResult)
         txtConfidence = findViewById(R.id.txtConfidence)
+        progressConfidence = findViewById(R.id.progressConfidence)
         txtGuidance = findViewById(R.id.txtGuidance)
-
-        val btnChooseImage =
-            findViewById<Button>(R.id.btnChooseImage)
+        cardRecyclingSteps = findViewById(R.id.cardRecyclingSteps)
+        txtRecyclingSteps = findViewById(R.id.txtRecyclingSteps)
 
         btnClassify.isEnabled = false
 
@@ -130,12 +122,21 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        btnClassify.setOnClickListener {
-            classifyWaste()
-        }
         btnTakePhoto.setOnClickListener {
             openCamera()
         }
+
+        btnClassify.setOnClickListener {
+            classifyWaste()
+        }
+    }
+
+    private fun onImageSelected(uri: Uri) {
+        selectedImageUri = uri
+        imagePreview.imageTintList = null
+        imagePreview.setImageURI(uri)
+
+        btnClassify.isEnabled = true
     }
 
     private fun classifyWaste() {
@@ -144,8 +145,8 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             btnClassify.isEnabled = false
             txtResult.text = "Analyzing image..."
-            txtConfidence.text = ""
-            txtGuidance.text = "Please wait."
+            txtConfidence.text = "--%"
+            progressConfidence.progress = 0
 
             try {
                 val result = withContext(Dispatchers.IO) {
@@ -156,8 +157,7 @@ class MainActivity : AppCompatActivity() {
 
                 Log.d(
                     "EcoVision",
-                    "Prediction: ${result.label}, " +
-                            "top score: ${result.confidence}"
+                    "Prediction: ${result.label}, top score: ${result.confidence}"
                 )
 
                 showClassificationResult(
@@ -168,12 +168,17 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e("EcoVision", "Classification failed", e)
 
-                txtResult.text = "Classification unavailable"
-                txtConfidence.text = ""
-                txtGuidance.text =
-                    e.localizedMessage
-                        ?: "Check the model and try again."
-
+                txtCategoryBadge.text = "ERROR"
+                txtResult.text = "Classification Unavailable"
+                txtConfidence.text = "0%"
+                progressConfidence.progress = 0
+                txtGuidance.text = e.localizedMessage ?: "Check the model and try again."
+                txtRecyclingSteps.text =
+                    "1. Clean or rinse item if needed.\n" +
+                            "2. Verify local waste sorting guidelines.\n" +
+                            "3. Place in designated sorting container."
+                cardRecyclingSteps.visibility = View.VISIBLE
+                cardResult.visibility = View.VISIBLE
             } finally {
                 btnClassify.isEnabled = selectedImageUri != null
             }
@@ -184,114 +189,149 @@ class MainActivity : AppCompatActivity() {
         label: String,
         confidence: Float
     ) {
-        // WasteClassifier must return confidence in the 0.0–1.0 range.
         val safeConfidence = confidence.coerceIn(0f, 1f)
         val percentage = safeConfidence * 100f
+        val progressInt = percentage.toInt()
 
-        val displayLabel = label
-            .replace("_", " ")
+        txtConfidence.text = String.format(
+            Locale.getDefault(),
+            "%.1f%%",
+            percentage
+        )
+        progressConfidence.progress = progressInt
+
+        if (safeConfidence < confidenceThreshold) {
+            txtCategoryBadge.text = "UNCERTAIN PREDICTION"
+            txtResult.text = "Uncertain Prediction"
+            txtGuidance.text =
+                "⚠️ The model could not confidently identify this item.\n\n" +
+                        "Try another photo with one waste item centered, " +
+                        "good lighting, and a simple background."
+            txtRecyclingSteps.text =
+                "1. Verify material visually before disposal.\n" +
+                        "2. Check local sorting guidelines.\n" +
+                        "3. Place in general waste if uncertain to avoid contamination."
+            cardRecyclingSteps.visibility = View.VISIBLE
+            cardResult.visibility = View.VISIBLE
+            return
+        }
+
+        val details = getWasteDetails(label)
+        txtCategoryBadge.text = details.categoryBadge
+        txtResult.text = details.itemTitle
+        txtGuidance.text = details.guidance
+        txtRecyclingSteps.text = details.recyclingSteps
+
+        cardRecyclingSteps.visibility = View.VISIBLE
+        cardResult.visibility = View.VISIBLE
+    }
+
+    private data class WasteDetails(
+        val categoryBadge: String,
+        val itemTitle: String,
+        val guidance: String,
+        val recyclingSteps: String
+    )
+
+    private fun getWasteDetails(label: String): WasteDetails {
+        val clean = label.lowercase().trim()
+
+        return when {
+            clean.contains("straw") -> WasteDetails(
+                categoryBadge = "RESIDUAL WASTE",
+                itemTitle = "Plastic Straws",
+                guidance = "Place in general residual waste. Consider eco-friendly re-usable alternatives next time!",
+                recyclingSteps = "1. Clean or rinse item if needed.\n2. Verify local waste sorting guidelines.\n3. Place in designated sorting container."
+            )
+            clean.contains("hazardous") -> WasteDetails(
+                categoryBadge = "HAZARDOUS WASTE",
+                itemTitle = formatTitle(label, "Hazardous Waste"),
+                guidance = "Handle with care. Do not throw in general trash. Take to an authorized hazardous waste facility.",
+                recyclingSteps = "1. Keep in a safe, sealed container if appropriate.\n2. Store away from heat and children.\n3. Take to an authorized hazardous-waste collection point."
+            )
+            clean.contains("non-recyclable") || clean.contains("residual") -> WasteDetails(
+                categoryBadge = "RESIDUAL WASTE",
+                itemTitle = formatTitle(label, "Non-Recyclable Waste"),
+                guidance = "Place in general residual waste. Consider eco-friendly re-usable alternatives next time!",
+                recyclingSteps = "1. Clean or rinse item if needed.\n2. Verify local waste sorting guidelines.\n3. Place in designated sorting container."
+            )
+            clean.contains("organic") || clean.contains("food") || clean.contains("compost") -> WasteDetails(
+                categoryBadge = "ORGANIC WASTE",
+                itemTitle = formatTitle(label, "Organic Waste"),
+                guidance = "Place in compost or organic waste collection bin if available. Keep free from non-compostable packaging.",
+                recyclingSteps = "1. Separate food scraps from plastic and other waste.\n2. Place suitable scraps in a compost bin.\n3. Send non-compostable organic waste to the appropriate facility."
+            )
+            clean.contains("recyclable") || clean.contains("cardboard") || clean.contains("paper") || clean.contains("bottle") || clean.contains("can") -> WasteDetails(
+                categoryBadge = "RECYCLABLE WASTE",
+                itemTitle = formatTitle(label, "Recyclable Material"),
+                guidance = "Empty and rinse the container before disposal. Check local recycling rules to verify acceptance.",
+                recyclingSteps = "1. Empty the container and remove leftover contents.\n2. Rinse and dry it when appropriate.\n3. Sort it according to your local recycling rules."
+            )
+            else -> WasteDetails(
+                categoryBadge = label.uppercase() + " WASTE",
+                itemTitle = formatTitle(label, "Waste Item"),
+                guidance = "Check your local waste-management guidance for the correct disposal method.",
+                recyclingSteps = "1. Clean or rinse item if needed.\n2. Verify local waste sorting guidelines.\n3. Place in designated sorting container."
+            )
+        }
+    }
+
+    private fun getRecyclingSteps(category: String): List<String> {
+        return when (
+            category.trim()
+                .uppercase()
+                .replace("_", " ")
+                .replace(Regex("\\s+"), " ")
+        ) {
+            "HAZARDOUS", "HAZARDOUS WASTE" -> listOf(
+                "Keep in a safe, sealed container if appropriate.",
+                "Store away from heat and children.",
+                "Take to an authorized hazardous-waste collection point."
+            )
+
+            "NON-RECYCLABLE", "NON RECYCLABLE", "NON-RECYCLABLE WASTE" -> listOf(
+                "Check local waste guidelines.",
+                "Keep separate from recyclable materials.",
+                "Dispose of it using the appropriate local waste service."
+            )
+
+            "ORGANIC", "ORGANIC WASTE" -> listOf(
+                "Separate food scraps from plastic and other waste.",
+                "Place suitable scraps in a compost bin.",
+                "Send unsuitable material to the appropriate waste facility."
+            )
+
+            "RECYCLABLE", "RECYCLABLE WASTE" -> listOf(
+                "Empty the container and remove leftover contents.",
+                "Rinse and dry it when appropriate.",
+                "Sort it according to local recycling rules."
+            )
+
+            else -> listOf(
+                "Check local waste-sorting guidelines.",
+                "Keep the item separate until its category is confirmed."
+            )
+        }
+    }
+
+    private fun updateRecyclingSteps(category: String) {
+        val steps = getRecyclingSteps(category)
+
+        txtRecyclingSteps.text = steps.mapIndexed { index, step ->
+            "${index + 1}. $step"
+        }.joinToString("\n")
+        cardRecyclingSteps.visibility = View.VISIBLE
+    }
+
+    private fun formatTitle(label: String, fallback: String): String {
+        if (label.isBlank()) return fallback
+        return label.replace("_", " ")
             .split(" ")
             .joinToString(" ") { word ->
                 word.replaceFirstChar { it.uppercase() }
             }
-
-        txtConfidence.text = String.format(
-            Locale.getDefault(),
-            "Model score: %.1f%%",
-            percentage
-        )
-
-        if (safeConfidence < confidenceThreshold) {
-            txtResult.text = "Uncertain prediction"
-
-            txtGuidance.text =
-                "⚠️ The model could not confidently identify this item.\n\n" +
-                        "Try another photo with one waste item centered, " +
-                        "good lighting, and a simple background.\n\n" +
-                        "Verify the material before disposal."
-
-            return
-        }
-
-        txtResult.text = "Predicted: $displayLabel"
-        txtGuidance.text = getDisposalGuidance(label)
     }
 
-    private fun getDisposalGuidance(label: String): String {
-        return when (label.lowercase()) {
-
-            "cardboard_boxes",
-            "cardboard_packaging" ->
-                "Flatten the cardboard. Keep it dry and free from food " +
-                        "residue. Recycle it if accepted locally."
-
-            "magazines",
-            "newspaper",
-            "office_paper" ->
-                "Keep the paper clean and dry. Recycle it through your " +
-                        "local paper collection service."
-
-            "paper_cups" ->
-                "Check whether your local facility accepts paper cups. " +
-                        "Some cups have plastic linings."
-
-            "plastic_water_bottles",
-            "plastic_soda_bottles",
-            "plastic_detergent_bottles",
-            "plastic_food_containers" ->
-                "Empty and rinse the container. Check local recycling " +
-                        "rules and separate the cap if required."
-
-            "plastic_cup_lids",
-            "plastic_straws",
-            "disposable_plastic_cutlery" ->
-                "Check local rules before recycling. Small plastic items " +
-                        "are often not accepted in standard recycling bins."
-
-            "plastic_shopping_bags",
-            "plastic_trash_bags" ->
-                "Do not put plastic bags in ordinary recycling bins " +
-                        "unless accepted. Look for a designated collection point."
-
-            "aluminum_soda_cans",
-            "aluminum_food_cans",
-            "steel_food_cans" ->
-                "Empty and rinse the can. Place it in metal recycling " +
-                        "if accepted locally."
-
-            "glass_beverage_bottles",
-            "glass_food_jars",
-            "glass_cosmetic_containers" ->
-                "Empty the container and check local glass recycling " +
-                        "rules. Handle broken glass carefully."
-
-            "food_waste",
-            "coffee_grounds",
-            "eggshells",
-            "tea_bags" ->
-                "Use a compost collection service or compost bin if " +
-                        "available. Check whether tea bags are compostable."
-
-            "clothing",
-            "shoes" ->
-                "Donate usable items or use a textile collection point. " +
-                        "Follow local textile-waste rules for damaged items."
-
-            "aerosol_cans" ->
-                "Do not puncture or burn the can. Follow local disposal " +
-                        "instructions; partially full cans may need special handling."
-
-            "styrofoam_cups",
-            "styrofoam_food_containers" ->
-                "Check for a specialist foam collection service. These " +
-                        "items are not accepted in many recycling programs."
-
-            else ->
-                "Check your local waste-management guidance for the " +
-                        "correct disposal method. If unsure, ask your campus " +
-                        "or municipal waste collection service."
-        }
-    }
     private fun openCamera() {
         try {
             val imageFile = File.createTempFile(
