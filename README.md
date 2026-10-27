@@ -53,6 +53,7 @@
 
 ```
 Reboot-Earth/
+├── Reboot_Earth.apk                          # Pre-built APK file for quick installation
 ├── app/
 │   ├── src/
 │   │   ├── main/
@@ -73,16 +74,34 @@ Reboot-Earth/
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting Started & Installation
 
-### Prerequisites
+### Option 1: Quick Installation via Pre-built APK (`Reboot_Earth.apk`)
 
+A pre-built APK file [`Reboot_Earth.apk`](Reboot_Earth.apk) is included directly in the root directory of this repository for instant testing.
+
+#### Method A: Direct Install on Android Device
+1. Transfer `Reboot_Earth.apk` to your Android phone or device.
+2. Open the file manager on your phone and tap `Reboot_Earth.apk`.
+3. Allow **"Install from Unknown Sources"** if prompted by Android.
+4. Open **Reboot Earth** and start identifying waste!
+
+#### Method B: Install via ADB (Android Debug Bridge)
+If you have ADB installed on your computer and a connected Android device or emulator:
+```bash
+adb install Reboot_Earth.apk
+```
+
+---
+
+### Option 2: Build & Run from Source (Android Studio)
+
+#### Prerequisites
 - **Android Studio**: Android Studio Ladybug (2024.2.1) or newer.
 - **JDK**: Java Development Kit 11 or higher.
 - **Android Device / Emulator**: Running Android 7.0 (API Level 24) or higher.
 
-### Installation
-
+#### Steps
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/your-username/Reboot-Earth.git
@@ -90,14 +109,11 @@ Reboot-Earth/
    ```
 
 2. **Open in Android Studio**:
-   - Open Android Studio, select **Open**, and navigate to the `Reboot-Earth` folder.
+   - Open Android Studio, select **Open**, and navigate to the `Reboot-Earth` directory.
 
-3. **Sync Gradle**:
-   - Allow Android Studio to download dependencies and sync the project automatically.
-
-4. **Run the App**:
-   - Connect a physical Android device or launch an emulator.
-   - Click the **Run** button (`Shift + F10`) or execute `:app:assembleDebug`.
+3. **Sync & Run**:
+   - Allow Gradle to sync dependencies.
+   - Connect your device or emulator and press **Run** (`Shift + F10`).
 
 ---
 
@@ -116,10 +132,10 @@ Reboot-Earth/
 
 ---
 
-## 👥 Author
+## 👥 Authors
 
-- **Author** : Shivam Prajapati, rahul, yash ,priyansh
-- **Team** : Reboot
+- **Authors**: Shivam Prajapati, Rahul, Yash, Priyansh
+- **Team**: Reboot
 - **Project**: Reboot Earth
 - **Contributions**: Pull requests, feature suggestions, and bug reports are welcome!
 
