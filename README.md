@@ -119,7 +119,7 @@ Reboot-Earth/
 ## 👥 Author
 
 - **Author** : Shivam Prajapati, rahul, yash ,priyansh
--**Team** : Reboot
+- **Team** : Reboot
 - **Project**: Reboot Earth
 - **Contributions**: Pull requests, feature suggestions, and bug reports are welcome!
 
